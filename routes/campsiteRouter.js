@@ -1,46 +1,77 @@
 const express = require("express");
 const campsiteRouter = express.Router();
+const Campsite = require("../models/campsite");
 
 campsiteRouter.route("/")
-.all((req,res,next) => {
-    res.statusCode = 200;
-    res.setHeader("Content-Typer", "text/plain");
-    next(); //go to next relevent request - if post request, the app.get() will be ignored
+
+.get((req,res,next) => {
+    Campsite.find()
+    .then(campsites => {
+        res.statusCode = 200;
+        res.setHeader("Content-Type","application/json");
+        res.json(campsites); //sends response, closes response stream, so res.end() not necessary
+    })
+    .catch(err => next(err)); //lets express handle error
 })
-.get((req,res) => {
-    res.end("Will send campsite info to you."); //no need to set status code or header, because already set in app.all()
-})
-.post((req,res) => { //assume data is JSON
-    res.end(`Will add campsite: ${req.body.name} with description: ${req.body.description} `); //JSON content of req has been parsed and put into req.body
+.post((req,res,next) => { //assume data is JSON
+    Campsite.create(req.body)
+    .then(campsite => {
+        console.log("Campsite created: ", campsite);
+        res.statusCode = 200;
+        res.setHeader("Content-Type","application/json");
+        res.json(campsite); //sends response, closes response stream, so res.end() not necessary
+     })
+     .catch(err => next(err)); //lets express handle error
 })
 .put((req,res) => { 
     res.statusCode = 403; //operation not supported
     res.end("PUT operation not supported on /campsites."); //JSON content of req has been parsed and put into req.body
 })
-.delete((req,res) => { 
-    res.end("Deleting all campsites."); //in future, need to use authentication to check if user is allowed to perform that operation
+.delete((req,res, next) => { 
+    Campsite.deleteMany()  //if no parameters sent, delets all
+    .then(response => {
+        res.statusCode = 200;
+        res.setHeader("Content-Type","application/json");
+        res.json(response); //sends response, closes response stream, so res.end() not necessary
+    })
+    .catch(err => next(err)); //lets express handle error
+
 });
 
 
 campsiteRouter.route("/:campsiteId")
-.all((req,res,next) => {
-    res.statusCode = 200;
-    res.setHeader("Content-Typer", "text/plain");
-    next(); //go to next relevent request - if post request, the app.get() will be ignored
-})
-.get((req,res) => {
-    res.end(`Will send details of campsite ${req.params.campsiteId} to you.`);
+.get((req,res,next) => {
+    Campsite.findById(req.params.campsiteId)
+    .then(campsite => {
+        res.statusCode = 200;
+        res.setHeader("Content-Type","application/json");
+        res.json(campsite); //sends response, closes response stream, so res.end() not necessary
+    })
+    .catch(err => next(err)); //lets express handle error
 })
 .post((req,res) => { //assume data is JSON
     res.statusCode = 403; //operation not supported
     res.end(`POST not supported on  /campsites/${req.params.campsiteId}.`); 
 })
-.put((req,res) => { 
-    res.write(`Updating the campsite: ${req.params.campsiteId}\n`); 
-    res.end(`with description: ${req.body.description}.`); 
+.put((req,res,next) => { 
+    Campsite.findByIdAndUpdate(req.params.campsiteId,
+        {$set: req.body},
+        {new: true })
+    .then(campsite => {
+        res.statusCode = 200;
+        res.setHeader("Content-Type","application/json");
+        res.json(campsite); //sends response, closes response stream, so res.end() not necessary
+    })
+    .catch(err => next(err)); //lets express handle error
 })
-.delete((req,res) => { 
-    res.end(`Deleting campsite: ${req.params.campsiteId}.`); 
+.delete((req,res,next) => { 
+    Campsite.findByIdAndDelete(req.params.campsiteId)
+    .then(response => {
+        res.statusCode = 200;
+        res.setHeader("Content-Type","application/json");
+        res.json(response); //sends response, closes response stream, so res.end() not necessary
+    })
+    .catch(err => next(err)); //lets express handle error
 });
 
 
