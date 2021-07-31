@@ -52,6 +52,8 @@ const campsiteSchema = new Schema({
     comments: [commentSchema] //allows array of comments for each campsite document
 }, {
     timestamps: true // will create createdAt and updatedAt timestamps
+}, {
+    usePushEach: true
 });
 
 const Campsite = mongoose.model("Campsite", campsiteSchema); //returns constructor function for model
