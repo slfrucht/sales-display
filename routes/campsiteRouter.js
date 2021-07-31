@@ -6,6 +6,7 @@ campsiteRouter.route("/")
 .get((req,res,next) => {
     Campsite.find()
     .then(campsites => {
+        console.log("number of campsites returned = ",campsites.length);
         res.statusCode = 200;
         res.setHeader("Content-Type","application/json");
         res.json(campsites); //sends response, closes response stream, so res.end() not necessary
