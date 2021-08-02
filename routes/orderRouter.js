@@ -1,34 +1,34 @@
 const express = require("express");
-const promotionRouter = express.Router();
-const Promotion = require("../models/promotion");
+const orderRouter = express.Router();
+const Order = require("../models/order");
 
-promotionRouter.route("/")
+orderRouter.route("/")
 .get((req,res,next) => {
-    Promotion.find()
-    .then(promotions => {
-        console.log("number of promotions returned = ",promotions.length);
+    Order.find()
+    .then(orders => {
+        console.log("number of orders returned = ",orders.length);
         res.statusCode = 200;
         res.setHeader("Content-Type","application/json");
-        res.json(promotions); //sends response, closes response stream, so res.end() not necessary
+        res.json(orders); //sends response, closes response stream, so res.end() not necessary
     })
     .catch(err => next(err)); //lets express handle error
 })
 .post((req,res,next) => { //assume data is JSON
-    Promotion.create(req.body)
-    .then(promotion => {
-        console.log("Promotion created: ", promotion);
+    Order.create(req.body)
+    .then(order => {
+        console.log("Partner created: ", order);
         res.statusCode = 200;
         res.setHeader("Content-Type","application/json");
-        res.json(promotion); //sends response, closes response stream, so res.end() not necessary
+        res.json(order); //sends response, closes response stream, so res.end() not necessary
      })
      .catch(err => next(err)); //lets express handle error
 })
 .put((req,res) => { 
     res.statusCode = 403; //operation not supported
-    res.end("PUT operation not supported on /promotions."); //JSON content of req has been parsed and put into req.body
+    res.end("PUT operation not supported on /orders."); //JSON content of req has been parsed and put into req.body
 })
 .delete((req,res, next) => { 
-    Promotion.deleteMany()  //if no parameters sent, delets all
+    Order.deleteMany()  //if no parameters sent, delets all
     .then(response => {
         res.statusCode = 200;
         res.setHeader("Content-Type","application/json");
@@ -39,33 +39,33 @@ promotionRouter.route("/")
 });
 
 
-promotionRouter.route("/:promotionId")
+orderRouter.route("/:assignedOrderId")
 .get((req,res,next) => {
-    Promotion.findById(req.params.promotionId)
-    .then(promotion => {
+    Order.findById(req.params.assignedOrderId)
+    .then(order => {
         res.statusCode = 200;
         res.setHeader("Content-Type","application/json");
-        res.json(promotion); //sends response, closes response stream, so res.end() not necessary
+        res.json(order); //sends response, closes response stream, so res.end() not necessary
     })
     .catch(err => next(err)); //lets express handle error
 })
 .post((req,res) => { //assume data is JSON
     res.statusCode = 403; //operation not supported
-    res.end(`POST not supported on  /partners/${req.params.partnerId}.`); 
+    res.end(`POST not supported on  /orders/${req.params.assignedOrderId}.`); 
 })
 .put((req,res,next) => { 
-    Promotion.findByIdAndUpdate(req.params.promotionId,
+    Order.findByIdAndUpdate(req.params.assignedOrderId,
         {$set: req.body},
         {new: true })
-    .then(promotion => {
+    .then(order => {
         res.statusCode = 200;
         res.setHeader("Content-Type","application/json");
-        res.json(promotion); //sends response, closes response stream, so res.end() not necessary
+        res.json(order); //sends response, closes response stream, so res.end() not necessary
     })
     .catch(err => next(err)); //lets express handle error
 })
 .delete((req,res,next) => { 
-    Promotion.findByIdAndDelete(req.params.promotionId)
+    Order.findByIdAndDelete(req.params.assignedOrderId)
     .then(response => {
         res.statusCode = 200;
         res.setHeader("Content-Type","application/json");
@@ -74,4 +74,4 @@ promotionRouter.route("/:promotionId")
     .catch(err => next(err)); //lets express handle error
 });
 
-module.exports = promotionRouter;
+module.exports = orderRouter;

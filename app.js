@@ -6,9 +6,11 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-const campsiteRouter = require('./routes/campsiteRouter');
-const partnerRouter = require('./routes/partnerRouter');
-const promotionRouter = require('./routes/promotionRouter');
+//const campsiteRouter = require('./routes/campsiteRouter');
+//const partnerRouter = require('./routes/partnerRouter');
+//const promotionRouter = require('./routes/promotionRouter');
+const dealRouter = require('./routes/dealRouter');
+const orderRouter = require('./routes/orderRouter');
 
 const mongoose = require("mongoose");
 const url = "mongodb://localhost:27017/nucampsite";
@@ -36,9 +38,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/campsites', campsiteRouter);
-app.use('/partners', partnerRouter);
-app.use('/promotions', promotionRouter);
+//app.use('/campsites', campsiteRouter);
+//app.use('/partners', partnerRouter);
+//app.use('/promotions', promotionRouter);
+app.use('/deals', dealRouter);
+app.use('/orders', orderRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -1,34 +1,34 @@
 const express = require("express");
-const partnerRouter = express.Router();
-const Partner = require("../models/partner");
+const dealRouter = express.Router();
+const Deal = require("../models/deal");
 
-partnerRouter.route("/")
+dealRouter.route("/")
 .get((req,res,next) => {
-    Partner.find()
-    .then(partners => {
-        console.log("number of partners returned = ",partners.length);
+    Deal.find()
+    .then(deals => {
+        console.log("number of deals returned = ",deals.length);
         res.statusCode = 200;
         res.setHeader("Content-Type","application/json");
-        res.json(partners); //sends response, closes response stream, so res.end() not necessary
+        res.json(deals); //sends response, closes response stream, so res.end() not necessary
     })
     .catch(err => next(err)); //lets express handle error
 })
 .post((req,res,next) => { //assume data is JSON
-    Partner.create(req.body)
-    .then(partner => {
-        console.log("Partner created: ", partner);
+    Deal.create(req.body)
+    .then(deal => {
+        console.log("Partner created: ", deal);
         res.statusCode = 200;
         res.setHeader("Content-Type","application/json");
-        res.json(partner); //sends response, closes response stream, so res.end() not necessary
+        res.json(deal); //sends response, closes response stream, so res.end() not necessary
      })
      .catch(err => next(err)); //lets express handle error
 })
 .put((req,res) => { 
     res.statusCode = 403; //operation not supported
-    res.end("PUT operation not supported on /partners."); //JSON content of req has been parsed and put into req.body
+    res.end("PUT operation not supported on /deals."); //JSON content of req has been parsed and put into req.body
 })
 .delete((req,res, next) => { 
-    Partner.deleteMany()  //if no parameters sent, delets all
+    Deal.deleteMany()  //if no parameters sent, delets all
     .then(response => {
         res.statusCode = 200;
         res.setHeader("Content-Type","application/json");
@@ -39,33 +39,33 @@ partnerRouter.route("/")
 });
 
 
-partnerRouter.route("/:partnerId")
+dealRouter.route("/:assignedDealId")
 .get((req,res,next) => {
-    Partner.findById(req.params.partnerId)
-    .then(partner => {
+    Deal.findById(req.params.assignedDealId)
+    .then(deal => {
         res.statusCode = 200;
         res.setHeader("Content-Type","application/json");
-        res.json(partner); //sends response, closes response stream, so res.end() not necessary
+        res.json(deal); //sends response, closes response stream, so res.end() not necessary
     })
     .catch(err => next(err)); //lets express handle error
 })
 .post((req,res) => { //assume data is JSON
     res.statusCode = 403; //operation not supported
-    res.end(`POST not supported on  /partners/${req.params.partnerId}.`); 
+    res.end(`POST not supported on  /deal/${req.params.assignedDealId}.`); 
 })
 .put((req,res,next) => { 
-    Partner.findByIdAndUpdate(req.params.partnerId,
+    Deal.findByIdAndUpdate(req.params.assignedDealId,
         {$set: req.body},
         {new: true })
-    .then(partner => {
+    .then(deal => {
         res.statusCode = 200;
         res.setHeader("Content-Type","application/json");
-        res.json(partner); //sends response, closes response stream, so res.end() not necessary
+        res.json(deal); //sends response, closes response stream, so res.end() not necessary
     })
     .catch(err => next(err)); //lets express handle error
 })
 .delete((req,res,next) => { 
-    Partner.findByIdAndDelete(req.params.partnerId)
+    Deal.findByIdAndDelete(req.params.assignedDealId)
     .then(response => {
         res.statusCode = 200;
         res.setHeader("Content-Type","application/json");
@@ -74,5 +74,4 @@ partnerRouter.route("/:partnerId")
     .catch(err => next(err)); //lets express handle error
 });
 
-
-module.exports = partnerRouter;
+module.exports = dealRouter;
