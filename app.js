@@ -6,20 +6,45 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-//const campsiteRouter = require('./routes/campsiteRouter');
-//const partnerRouter = require('./routes/partnerRouter');
-//const promotionRouter = require('./routes/promotionRouter');
 const dealRouter = require('./routes/dealRouter');
 const orderRouter = require('./routes/orderRouter');
 
+const mongodb = require("mongodb").MongoClient;
+const csvtojson = require("csvtojson");
+
+csvtojson() 
+.fromFile("./csv_files/deals.csv")
+.then(csvDealsData => {
+  console.log("Length of deals array: ", csvDealsData.length);
+  mongodb.connect(url,
+  {useCreateIndex: true,
+  useFindAndModify: false,
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+  },
+  (err, client) => {
+  if(err) throw err;
+
+  client.db("salesdisplay_db")
+  .collection("deals")
+  .insertMany(csvDealsData, (err, res) => {
+    if(err) throw err;
+    console.log(`Inserted: ${res.insertedCount} rows`);
+    client.close();
+  });
+});
+});
+
+
 const mongoose = require("mongoose");
-const url = "mongodb://localhost:27017/nucampsite";
+const url = "mongodb://localhost:27017/salesdisplay";
 const connect = mongoose.connect(url, {
   useCreateIndex: true,
   useFindAndModify: false,
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
+
 
 connect.then(() => {console.log("Connected to server.");}
 , err => console.log(err)); //another way of catching error
@@ -38,9 +63,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-//app.use('/campsites', campsiteRouter);
-//app.use('/partners', partnerRouter);
-//app.use('/promotions', promotionRouter);
 app.use('/deals', dealRouter);
 app.use('/orders', orderRouter);
 
