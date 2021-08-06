@@ -37,7 +37,7 @@ csvtojson()
 
 
 const mongoose = require("mongoose");
-const url = "mongodb://localhost:27017/salesdisplay";
+const url = "mongodb://localhost:27017/salesdisplay_db";
 const connect = mongoose.connect(url, {
   useCreateIndex: true,
   useFindAndModify: false,
