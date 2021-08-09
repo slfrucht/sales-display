@@ -11,7 +11,7 @@ const orderRouter = require('./routes/orderRouter');
 
 const mongodb = require("mongodb").MongoClient;
 const csvtojson = require("csvtojson");
-
+///*
 csvtojson() 
 .fromFile("./csv_files/deals.csv")
 .then(csvDealsData => {
@@ -27,6 +27,13 @@ csvtojson()
 
   client.db("salesdisplay_db")
   .collection("deals")
+  .deleteMany((err, res) => {
+    if(err) throw err;
+    console.log("Deleted contents");
+    //client.close();
+  });
+  client.db("salesdisplay_db")
+  .collection("deals")
   .insertMany(csvDealsData, (err, res) => {
     if(err) throw err;
     console.log(`Inserted: ${res.insertedCount} rows`);
@@ -34,7 +41,38 @@ csvtojson()
   });
 });
 });
+//*/
+///*
+csvtojson() 
+.fromFile("./csv_files/orders.csv")
+.then(csvOrdersData => {
+  console.log("Length of orders array: ", csvOrdersData.length);
+  mongodb.connect(url,
+  {useCreateIndex: true,
+  useFindAndModify: false,
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+  },
+  (err, client) => {
+  if(err) throw err;
 
+  client.db("salesdisplay_db")
+  .collection("orders")
+  .deleteMany((err, res) => {
+    if(err) throw err;
+    console.log("Deleted contents");
+    //client.close();
+  });
+  client.db("salesdisplay_db")
+  .collection("orders")
+  .insertMany(csvOrdersData, (err, res) => {
+    if(err) throw err;
+    console.log(`Inserted: ${res.insertedCount} rows`);
+    client.close();
+  });
+});
+});
+//*/
 
 const mongoose = require("mongoose");
 const url = "mongodb://localhost:27017/salesdisplay_db";
