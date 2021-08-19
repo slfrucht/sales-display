@@ -1,9 +1,11 @@
 const express = require("express");
 const orderRouter = express.Router();
 const Order = require("../models/order");
+const cors = require("./cors");
 
 orderRouter.route("/")
-.get((req,res,next) => {
+//.options(cors.corsWithOptions, (req, res) => res.sendStatus(200)) //applies to all methods on this route
+.get(cors.cors, (req,res,next) => {
     Order.find()
     .then(orders => {
         console.log("number of orders returned = ",orders.length);

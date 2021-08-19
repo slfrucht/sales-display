@@ -74,4 +74,51 @@ dealRouter.route("/:assignedDealId")
     .catch(err => next(err)); //lets express handle error
 });
 
+dealRouter.route("/title/:titleName")
+.get((req,res,next) => {
+    Deal.find({title: req.params.titleName})
+    .then(deals => {
+        res.statusCode = 200;
+        res.setHeader("Content-Type","application/json");
+        res.json(deals); //sends response, closes response stream, so res.end() not necessary
+    })
+    .catch(err => next(err)); //lets express handle error
+})
+.post((req,res) => { //assume data is JSON
+    res.statusCode = 403; //operation not supported
+    res.end(`POST not supported on  /deal/${req.params.assignedDealId}.`); 
+})
+.put((req,res,next) => { 
+    res.statusCode = 403; //operation not supported
+    res.end(`POST not supported on  /deal/${req.params.assignedDealId}.`); 
+})
+.delete((req,res,next) => { 
+    res.statusCode = 403; //operation not supported
+    res.end(`POST not supported on  /deal/${req.params.assignedDealId}.`); 
+});
+
+dealRouter.route("/categories/:primaryCategory")
+.get((req,res,next) => {
+    Deal.find({primaryCategory: req.params.primaryCategory})
+    //Deal.find({title: "Handbags"}) 
+    .then(deals => {
+        res.statusCode = 200;
+        res.setHeader("Content-Type","application/json");
+        res.json(deals); //sends response, closes response stream, so res.end() not necessary
+    })
+    .catch(err => next(err)); //lets express handle error
+})
+.post((req,res) => { //assume data is JSON
+    res.statusCode = 403; //operation not supported
+    res.end(`POST not supported on  /deal/${req.params.assignedDealId}.`); 
+})
+.put((req,res,next) => { 
+    res.statusCode = 403; //operation not supported
+    res.end(`POST not supported on  /deal/${req.params.assignedDealId}.`); 
+})
+.delete((req,res,next) => { 
+    res.statusCode = 403; //operation not supported
+    res.end(`POST not supported on  /deal/${req.params.assignedDealId}.`); 
+});
+
 module.exports = dealRouter;

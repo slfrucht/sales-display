@@ -34,6 +34,14 @@ const orderSchema = new Schema({
     postal_code: {
         type: Number, 
         required: true
+    },
+    lng: {
+        type: Number, 
+        required: true
+    },
+    lat: {
+        type: Number, 
+        required: true
     }
 }, {
     timestamps: true // will create createdAt and updatedAt timestamps

@@ -4,88 +4,44 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+const mongoose = require("mongoose");
+const mongodb = require("mongodb").MongoClient;
+const csvtojson = require("csvtojson");
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 const dealRouter = require('./routes/dealRouter');
 const orderRouter = require('./routes/orderRouter');
-
-const mongodb = require("mongodb").MongoClient;
-const csvtojson = require("csvtojson");
-///*
-csvtojson() 
-.fromFile("./csv_files/deals.csv")
-.then(csvDealsData => {
-  console.log("Length of deals array: ", csvDealsData.length);
-  mongodb.connect(url,
-  {useCreateIndex: true,
-  useFindAndModify: false,
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-  },
-  (err, client) => {
-  if(err) throw err;
-
-  client.db("salesdisplay_db")
-  .collection("deals")
-  .deleteMany((err, res) => {
-    if(err) throw err;
-    console.log("Deleted contents");
-    //client.close();
-  });
-  client.db("salesdisplay_db")
-  .collection("deals")
-  .insertMany(csvDealsData, (err, res) => {
-    if(err) throw err;
-    console.log(`Inserted: ${res.insertedCount} rows`);
-    client.close();
-  });
-});
-});
-//*/
-///*
-csvtojson() 
-.fromFile("./csv_files/orders.csv")
-.then(csvOrdersData => {
-  console.log("Length of orders array: ", csvOrdersData.length);
-  mongodb.connect(url,
-  {useCreateIndex: true,
-  useFindAndModify: false,
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-  },
-  (err, client) => {
-  if(err) throw err;
-
-  client.db("salesdisplay_db")
-  .collection("orders")
-  .deleteMany((err, res) => {
-    if(err) throw err;
-    console.log("Deleted contents");
-    //client.close();
-  });
-  client.db("salesdisplay_db")
-  .collection("orders")
-  .insertMany(csvOrdersData, (err, res) => {
-    if(err) throw err;
-    console.log(`Inserted: ${res.insertedCount} rows`);
-    client.close();
-  });
-});
-});
-//*/
-
-const mongoose = require("mongoose");
 const url = "mongodb://localhost:27017/salesdisplay_db";
+
+
+///*
+(async () => {
+  // code goes here
+  const mongooseClient = await mongooseConnect(url); //this one is for connecting to endpoints
+  const client = await mongoConnect(url); // this is for reading and converting csv files
+//fill deals collection
+  await deleteData(client, "deals");
+  const dealsData = await csvToJson("./csv_files/deals.csv");
+  await createData(client, dealsData, "deals");
+//fill orders collection
+  await deleteData(client, "orders");
+  const ordersData = await csvToJson("./csv_files/orders_filtered.csv");
+  await createData(client, ordersData, "orders");
+})();
+
+//const mongoose = require("mongoose");
+/*
 const connect = mongoose.connect(url, {
   useCreateIndex: true,
   useFindAndModify: false,
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
+*/
 
-
-connect.then(() => {console.log("Connected to server.");}
-, err => console.log(err)); //another way of catching error
+//connect.then(() => {console.log("Connected to server.");}
+//, err => console.log(err)); //another way of catching error
 
 var app = express();
 
@@ -131,3 +87,34 @@ app.use(function(err, req, res, next) {
 });
 
 module.exports = app;
+
+async function csvToJson(filePath) {
+  return csvtojson().fromFile(filePath);  //returns promise
+}
+async function deleteData(client, collection) {
+  return client.db("salesdisplay_db")
+  .collection(collection)
+  .deleteMany();
+}
+async function createData(client, csvDealsData, collection) {
+  return client.db("salesdisplay_db")
+  .collection(collection)
+  .insertMany(csvDealsData);
+}
+async function mongoConnect(url) {
+  return mongodb.connect(url,
+    {useCreateIndex: true,
+    useFindAndModify: false,
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+    });
+} 
+async function mongooseConnect(url) {
+  return mongoose.connect(url, {
+    useCreateIndex: true,
+    useFindAndModify: false,
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  });
+}
+
