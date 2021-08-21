@@ -12,6 +12,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 const dealRouter = require('./routes/dealRouter');
 const orderRouter = require('./routes/orderRouter');
+const categoryRouter = require('./routes/categoryRouter');
 const url = "mongodb://localhost:27017/salesdisplay_db";
 
 
@@ -60,6 +61,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/deals', dealRouter);
 app.use('/orders', orderRouter);
+app.use('/categories', categoryRouter);
 
 app.all("*", (req, res, next) => {
   if(req.secure) {

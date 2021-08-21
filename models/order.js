@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Deal = require("./deal");
 const Schema = mongoose.Schema; //Schema function
 
 require("mongoose-currency").loadType(mongoose);
@@ -42,7 +43,12 @@ const orderSchema = new Schema({
     lat: {
         type: Number, 
         required: true
-    }
+    },
+    deal: {
+        type: Schema.Types.ObjectId,
+        ref: 'Deal'
+    }       
+
 }, {
     timestamps: true // will create createdAt and updatedAt timestamps
 });
