@@ -1,9 +1,10 @@
 const express = require("express");
 const dealRouter = express.Router();
 const Deal = require("../models/deal");
+const cors = require("./cors");
 
 dealRouter.route("/")
-.get((req,res,next) => {
+.get(cors.cors, (req,res,next) => {
     Deal.find()
     .then(deals => {
         console.log("number of deals returned = ",deals.length);
