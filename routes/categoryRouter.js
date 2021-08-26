@@ -5,12 +5,10 @@ const Deal = require("../models/deal");
 const cors = require("./cors");
 
 categoryRouter.route("/:primaryCategory")
-//.options(cors.corsWithOptions, (req, res) => res.sendStatus(200)) //applies to all methods on this route
 .get(cors.cors, (req,res,next) => {
     let dealIdArray = [];
     Deal.find()
     .then(deals => {
-
         let dealArray = deals.filter(deal => {
             return deal.primaryCategory === req.params.primaryCategory;
         });
@@ -25,7 +23,7 @@ categoryRouter.route("/:primaryCategory")
             return dealIdArray.includes(order.deal_id);
         });
         console.log("number of orders returned = ",orderArray.length);
-        
+
         res.statusCode = 200;
         res.setHeader("Content-Type","application/json");
         res.json(orderArray); //sends response, closes response stream, so res.end() not necessary

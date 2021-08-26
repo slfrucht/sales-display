@@ -14,6 +14,8 @@ const dealRouter = require('./routes/dealRouter');
 const orderRouter = require('./routes/orderRouter');
 const categoryRouter = require('./routes/categoryRouter');
 const url = "mongodb://localhost:27017/salesdisplay_db";
+const ordersFilePath = "./csv_files/shorter_lat_lng.csv";
+const dealsFilePath = "./csv_files/deals.csv";
 
 
 ///*
@@ -23,29 +25,15 @@ const url = "mongodb://localhost:27017/salesdisplay_db";
   const client = await mongoConnect(url); // this is for reading and converting csv files
 //fill deals collection
   await deleteData(client, "deals");
-  const dealsData = await csvToJson("./csv_files/deals.csv");
+  const dealsData = await csvToJson(dealsFilePath);
   await createData(client, dealsData, "deals");
 //fill orders collection
   await deleteData(client, "orders");
-  const ordersData = await csvToJson("./csv_files/orders_filtered.csv");
+  const ordersData = await csvToJson(ordersFilePath);
   await createData(client, ordersData, "orders");
 })();
 
-//const mongoose = require("mongoose");
-/*
-const connect = mongoose.connect(url, {
-  useCreateIndex: true,
-  useFindAndModify: false,
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-});
-*/
-
-//connect.then(() => {console.log("Connected to server.");}
-//, err => console.log(err)); //another way of catching error
-
 var app = express();
-
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -103,6 +91,7 @@ async function createData(client, csvDealsData, collection) {
   .collection(collection)
   .insertMany(csvDealsData);
 }
+
 async function mongoConnect(url) {
   return mongodb.connect(url,
     {useCreateIndex: true,

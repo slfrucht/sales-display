@@ -36,11 +36,11 @@ const orderSchema = new Schema({
         type: Number, 
         required: true
     },
-    lng: {
+    x: {
         type: Number, 
         required: true
     },
-    lat: {
+    y: {
         type: Number, 
         required: true
     },
